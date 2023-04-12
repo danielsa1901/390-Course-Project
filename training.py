@@ -12,6 +12,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.decomposition import PCA
+from scipy.stats import skew
 
 # add additional column in each csv to specify walking or jumping (for the training model), 0 or 1 has to be used to avoid issues with h5py
 column_name = "WalkingJumping"
@@ -153,14 +154,11 @@ random.shuffle(G1Data3_windows)
 # Concatenate the windowed data into a new DataFrame
 jumping_df = pd.concat(G1Data_windows)
 walking_df = pd.concat(G1Data3_windows)
+data = pd.concat([jumping_df, walking_df])
 #splitting it 90:10
-X = jumping_df.drop(columns=['WalkingJumping'])
-y = jumping_df['WalkingJumping']
-X_train1, X_test1, y_train1, y_test1 = train_test_split(X, y, test_size=0.1, shuffle=False, stratify=None)
-
-X2 = walking_df.drop(columns=['WalkingJumping'])
-y2 = walking_df['WalkingJumping']
-X_train2, X_test2, y_train2, y_test2 = train_test_split(X2, y2, test_size=0.1, shuffle=False, stratify=None)
+X = data.drop(columns=['WalkingJumping'])
+y = data['WalkingJumping']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, shuffle=False, stratify=None)
 
 # putting data into the hdf5 file
 with h5py.File('./hdf5_groups.h5', 'w') as hdf:
@@ -173,19 +171,53 @@ with h5py.File('./hdf5_groups.h5', 'w') as hdf:
     G3 = hdf.create_group('/Bradley')
     G4 = hdf.create_group('/Dataset')
     G5 = hdf.create_group('/Dataset/Testing')
-    G5.create_dataset('Jumping training/data',data=X_train1)
-    G5.create_dataset('Jumping training/labels',data=y_train1)
-    G5.create_dataset('Walking training/data',data=X_train2)
-    G5.create_dataset('Walking training/labels',data=y_train2)
+    G5.create_dataset('training/data',data=X_train)
+    G5.create_dataset('training/labels',data=y_train)
     G6 = hdf.create_group('/Dataset/Training')
-    G6.create_dataset('Jumping testing/data',data=X_test1)
-    G6.create_dataset('Jumping testing/labels',data=y_test1)
-    G6.create_dataset('Walking testing/data',data=X_test2)
-    G6.create_dataset('Walking testing/labels',data=y_test2)
+    G6.create_dataset('testing/data',data=X_test)
+    G6.create_dataset('testing/labels',data=y_test)
 
 # Data Visualization
 #skipped for now, more important stuff to work on first
 
-# Pre-processing
+# Pre-processing, applying an moving average filter to reduce noise
+X_train_smoothed = X_train.rolling(window_size).mean()
+X_test_smoothed = X_test.rolling(window_size).mean()
 
+# Feature Extraction
+def extract_features(window):
+    features = []
+    features.append(np.min(window))
+    features.append(np.max(window))
+    features.append(np.max(window) - np.min(window))
+    features.append(np.mean(window))
+    features.append(np.median(window))
+    features.append(np.var(window))
+    features.append(skew(window))
+    return features
+
+X_train_features = [extract_features(window) for window in X_train_smoothed.values]
+X_test_features = [extract_features(window) for window in X_test_smoothed.values]
+
+train_df = pd.DataFrame(X_train_features)
+train_df = train_df.dropna()
+X_train_features = train_df.to_numpy()
+
+test_df = pd.DataFrame(X_test_features)
+test_df = test_df.dropna()
+X_test_features = test_df.to_numpy()
+
+y_train = y_train[:-4]
+y_test = y_test[:-4]
+
+#Classifier
+# Train the logistic regression model
+clf = LogisticRegression(random_state=0, max_iter=1000).fit(X_train_features, y_train)
+
+# Predict the labels for the test set
+y_pred = clf.predict(X_test_features)
+
+# Compute the accuracy of the model
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy: {:.2f}%".format(accuracy * 100))
 
