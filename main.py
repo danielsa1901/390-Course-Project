@@ -13,9 +13,9 @@ from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.decomposition import PCA
 
 # add additional column in each csv to specify walking or jumping (for the training model)
-column_name = "Walking/Jumping"
-value_name = "walking"
-value_name2 = "jumping"
+column_name = "WalkingJumping"
+value_name = 0
+value_name2 = 1
 
 # Open the CSV file for reading and writing
 with open('./Data/Daniel/Jumping Left pocket/Raw Data.csv', 'r') as infile:
@@ -92,17 +92,18 @@ with open('./Data/Daniel/Right pocket walking/Raw Data.csv', 'r') as infile:
 
 # importing Data into python
 G1Data = pd.read_csv(
-    './Data/Daniel/NewData/DJLP.csv',sep=",").iloc[:, :]
+    './Data/Daniel/NewData/DJLP.csv',sep=",")
 G1Data2 = pd.read_csv(
-    './Data/Daniel/NewData/DJRP.csv',sep=",").iloc[:, :]
+    './Data/Daniel/NewData/DJRP.csv',sep=",")
 G1Data3 = pd.read_csv(
-    './Data/Daniel/NewData/DWLP.csv',sep=",").iloc[:, :]
+    './Data/Daniel/NewData/DWLP.csv',sep=",")
 G1Data4 = pd.read_csv(
-    './Data/Daniel/NewData/DWRP.csv',sep=",").iloc[:, :]
+    './Data/Daniel/NewData/DWRP.csv',sep=",")
+
 
 # putting data into the hdf5 file
 with h5py.File('./hdf5_groups.h5', 'w') as hdf:
-    G1 = hdf.create_group('/Daniel')
+    G1 = hdf.create_group('Daniel')
     G1.create_dataset('Jumping Left', data=G1Data)
     G1.create_dataset('Jumping Right', data=G1Data2)
     G1.create_dataset('Walking Left', data=G1Data3)
