@@ -18,84 +18,87 @@ value_name = "walking"
 value_name2 = "jumping"
 
 # Open the CSV file for reading and writing
-with open('./Data/Daniel/Jumping Left pocket/Raw Data.csv', 'r+') as file:
-    # Create a CSV reader and writer objects
-    reader = csv.reader(file)
-    writer = csv.writer(file)
-    # Read the header row from the input CSV file
-    header_row = next(reader)
-    # Add the new column title to the header row
-    header_row.append(column_name)
-    # Write the updated header row to the output CSV file
-    writer.writerow(header_row)
-    # Loop through each data row in the input CSV file
-    for row in reader:
-        # Add the new column value to the data row
-        row.append(value_name2)
-        # Write the updated data row to the output CSV file
-        writer.writerow(row)
+with open('./Data/Daniel/Jumping Left pocket/Raw Data.csv', 'r') as infile:
+    with open('./Data/Daniel/NewData/DJLP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name2)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
 
-with open('./Data/Daniel/Jumping Right pocket/Raw Data.csv', 'r+') as file:
-    # Create a CSV reader and writer objects
-    reader = csv.reader(file)
-    writer = csv.writer(file)
-    # Read the header row from the input CSV file
-    header_row = next(reader)
-    # Add the new column title to the header row
-    header_row.append(column_name)
-    # Write the updated header row to the output CSV file
-    writer.writerow(header_row)
-    # Loop through each data row in the input CSV file
-    for row in reader:
-        # Add the new column value to the data row
-        row.append(value_name2)
-        # Write the updated data row to the output CSV file
-        writer.writerow(row)
+with open('./Data/Daniel/Jumping Right pocket/Raw Data.csv', 'r') as infile:
+    with open('./Data/Daniel/NewData/DJRP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name2)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
 
-with open('./Data/Daniel/Left pocket walking/Raw Data.csv', 'r+') as file:
-    # Create a CSV reader and writer objects
-    reader = csv.reader(file)
-    writer = csv.writer(file)
-    # Read the header row from the input CSV file
-    header_row = next(reader)
-    # Add the new column title to the header row
-    header_row.append(column_name)
-    # Write the updated header row to the output CSV file
-    writer.writerow(header_row)
-    # Loop through each data row in the input CSV file
-    for row in reader:
-        # Add the new column value to the data row
-        row.append(value_name2)
-        # Write the updated data row to the output CSV file
-        writer.writerow(row)
+with open('./Data/Daniel/Left pocket walking/Raw Data.csv', 'r') as infile:
+    with open('./Data/Daniel/NewData/DWLP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
 
-
-with open('./Data/Daniel/Right pocket walking/Raw Data.csv', 'r+') as file:
-    # Create a CSV reader and writer objects
-    reader = csv.reader(file)
-    writer = csv.writer(file)
-    # Read the header row from the input CSV file
-    header_row = next(reader)
-    # Add the new column title to the header row
-    header_row.append(column_name)
-    # Write the updated header row to the output CSV file
-    writer.writerow(header_row)
-    # Loop through each data row in the input CSV file
-    for row in reader:
-        # Add the new column value to the data row
-        row.append(value_name2)
-        # Write the updated data row to the output CSV file
-        writer.writerow(row)
+with open('./Data/Daniel/Right pocket walking/Raw Data.csv', 'r') as infile:
+    with open('./Data/Daniel/NewData/DWRP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
 
 # importing Data into python
 G1Data = pd.read_csv(
-    './Data/Daniel/Jumping Left pocket/Raw Data.csv').iloc[:, :]
+    './Data/Daniel/NewData/DJLP.csv',sep=",").iloc[:, :]
 G1Data2 = pd.read_csv(
-    './Data/Daniel/Jumping Right pocket/Raw Data.csv').iloc[:, :]
+    './Data/Daniel/NewData/DJRP.csv',sep=",").iloc[:, :]
 G1Data3 = pd.read_csv(
-    './Data/Daniel/Left pocket walking/Raw Data.csv').iloc[:, :]
+    './Data/Daniel/NewData/DWLP.csv',sep=",").iloc[:, :]
 G1Data4 = pd.read_csv(
-    './Data/Daniel/Right pocket walking/Raw Data.csv').iloc[:, :]
+    './Data/Daniel/NewData/DWRP.csv',sep=",").iloc[:, :]
 
 # putting data into the hdf5 file
 with h5py.File('./hdf5_groups.h5', 'w') as hdf:
