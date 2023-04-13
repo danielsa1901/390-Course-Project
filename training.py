@@ -16,6 +16,7 @@ from scipy.stats import skew
 
 # for debugging
 np.set_printoptions(threshold=np.inf)
+pd.set_option('display.max_columns', None)
 
 # add additional column in each csv to specify walking or jumping (for the training model), 0 or 1 has to be used to avoid issues with h5py
 column_name = "WalkingJumping"
@@ -125,9 +126,8 @@ for lst in [G1Data3_windows, G1Data4_windows, G2Data3_windows, G2Data4_windows]:
 random.shuffle(jumping_list)
 random.shuffle(walking_list)
 
-print(jumping_list)
-
 # Concatenate the windowed data into a new DataFrame
+
 jumping_df = pd.concat(jumping_list)
 walking_df = pd.concat(walking_list)
 data = pd.concat([jumping_df, walking_df])
@@ -166,40 +166,40 @@ with h5py.File('./hdf5_groups.h5', 'w') as hdf:
 X_train_smoothed = X_train.rolling(window_size).mean()
 X_test_smoothed = X_test.rolling(window_size).mean()
 
-# # Feature Extraction
-# def extract_features(window):
-#     features = []
-#     features.append(np.min(window))
-#     features.append(np.max(window))
-#     features.append(np.max(window) - np.min(window))
-#     features.append(np.mean(window))
-#     features.append(np.median(window))
-#     features.append(np.var(window))
-#     features.append(skew(window))
-#     return features
+# Feature Extraction
+def extract_features(window):
+    features = []
+    features.append(np.min(window))
+    features.append(np.max(window))
+    features.append(np.max(window) - np.min(window))
+    features.append(np.mean(window))
+    features.append(np.median(window))
+    features.append(np.var(window))
+    features.append(skew(window))
+    return features
 
-# X_train_features = [extract_features(window) for window in X_train_smoothed.values]
-# X_test_features = [extract_features(window) for window in X_test_smoothed.values]
+X_train_features = [extract_features(window) for window in X_train_smoothed.values]
+X_test_features = [extract_features(window) for window in X_test_smoothed.values]
 
-# train_df = pd.DataFrame(X_train_features)
-# train_df = train_df.dropna()
-# X_train_features = train_df.to_numpy()
+train_df = pd.DataFrame(X_train_features)
+train_df = train_df.dropna()
+X_train_features = train_df.to_numpy()
 
-# test_df = pd.DataFrame(X_test_features)
-# test_df = test_df.dropna()
-# X_test_features = test_df.to_numpy()
+test_df = pd.DataFrame(X_test_features)
+test_df = test_df.dropna()
+X_test_features = test_df.to_numpy()
 
-# y_train = y_train[:-4]
-# y_test = y_test[:-4]
+y_train = y_train[:-4]
+y_test = y_test[:-4]
 
-# #Classifier
-# # Train the logistic regression model
-# clf = LogisticRegression(random_state=0, max_iter=1000).fit(X_train_features, y_train)
+#Classifier
+# Train the logistic regression model
+clf = LogisticRegression(random_state=0, max_iter=1000).fit(X_train_features, y_train)
 
-# # Predict the labels for the test set
-# y_pred = clf.predict(X_test_features)
+# Predict the labels for the test set
+y_pred = clf.predict(X_test_features)
 
-# # Compute the accuracy of the model
-# accuracy = accuracy_score(y_test, y_pred)
-# print("Accuracy: {:.2f}%".format(accuracy * 100))
+# Compute the accuracy of the model
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy: {:.2f}%".format(accuracy * 100))
 
