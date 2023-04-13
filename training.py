@@ -237,6 +237,8 @@ for i in range(0, len(G1Data4), samples_per_window):
         # Add the windowed data to the list
         G1Data4_windows.append(window)
 
+samples_per_window = int(window_size / G2Data['Time (s)'].diff().mean())
+
 # Josh
 for i in range(0, len(G2Data), samples_per_window):
     # Get the current window of data
