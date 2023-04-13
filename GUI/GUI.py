@@ -14,9 +14,24 @@ def darkstyle(window):
     style.configure("Togglebutton", foreground='white')
     return style
 
-
-
 def main_window():
+    # Function for opening the
+    # file explorer window
+    def browseFiles():
+        filename = tk.filedialog.askopenfilename(initialdir = "/",
+                                            title = "Select a File",
+                                            filetypes = (("CSV files",
+                                                            "*.csv*"),
+                                                        ("all files",
+                                                            "*.*")))
+      
+        # Change label contents
+        label_file_explorer.configure(text="File Opened: "+filename)
+
+        with open(filename, 'r') as csv_file:
+            stuff = csv_file.read()
+            print(stuff)
+
     # plot function is created for plotting the graph in tkinter window
     def plot():
         # the figure that will contain the plot
@@ -53,28 +68,47 @@ def main_window():
     window = tk.Tk()
     window.title("My App")
     window.resizable(False, False)
+    #Set window background color
+    window.config(background = "white")
     img = tk.PhotoImage(file="bg-dark-grey.png")
 
     style = darkstyle(window)
 
-
-    lab = ttk.Label(
+    # Create a File Explorer label
+    label_file_explorer = tk.Label(
         window,
-        text="Hello World",
+        text="File Explorer",
         compound="center",
-        font="arial 50",
-        image=img)
-    lab.pack(fill="both", expand=1)
+        font="arial 12",
+        image=img
+        )
 
+    label_plot = ttk.Label(
+        window,
+        text="Plot",
+        compound="center",
+        font="arial 12",
+        image=img
+        )
 
-    button = ttk.Button(
+    button_explore = ttk.Button(
+        window,
+        text = "Browse Files",
+        command = browseFiles,
+        style="Accentbutton"
+        )
+
+    button_plot = ttk.Button(
         window,
         text="plot",
         command = plot,
         style="Accentbutton"
         )
 
-    button.place(relx=0.43, rely=0.7, width=100, height=30)
+    label_file_explorer.pack(fill="both", expand=1)
+    label_plot.pack(fill="both", expand=1)
+    button_explore.place(relx=0.43, rely=0.4, width=100, height=30)
+    button_plot.place(relx=0.43, rely=0.9, width=100, height=30)
 
 
     window.mainloop()
