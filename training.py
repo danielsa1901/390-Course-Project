@@ -24,9 +24,9 @@ value_name = 0
 value_name2 = 1
 
 # Open the CSV file for reading and writing
-# Daniel Data
-with open('./Data/Daniel/Jumping Left pocket/Raw Data.csv', 'r') as infile:
-    with open('./Data/Daniel/NewData/DJLP.csv', 'w') as outfile:
+def extract_data(in_file_path, out_file_path, column_name, dummy_value):
+    with open(in_file_path, 'r') as infile, \
+        open(out_file_path, 'w') as outfile:
         # Create a CSV reader and writer objects
         reader = csv.reader(infile)
         writer = csv.writer(outfile, lineterminator='\n')
@@ -39,140 +39,36 @@ with open('./Data/Daniel/Jumping Left pocket/Raw Data.csv', 'r') as infile:
         # Loop through each data row in the input CSV file
         for row in reader:
             #Add the new column value to the data row
-            row.append(value_name2)
+            row.append(dummy_value)
             #Write the updated data row to the output CSV file
             writer.writerow(row)
 
-with open('./Data/Daniel/Jumping Right pocket/Raw Data.csv', 'r') as infile:
-    with open('./Data/Daniel/NewData/DJRP.csv', 'w') as outfile:
-        # Create a CSV reader and writer objects
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile, lineterminator='\n')
-        # Read the header row from the input CSV file
-        header_row = next(reader)
-        # Add the new column title to the header row
-        header_row.append(column_name)
-        # Write the updated header row to the output CSV file
-        writer.writerow(header_row)
-        # Loop through each data row in the input CSV file
-        for row in reader:
-            #Add the new column value to the data row
-            row.append(value_name2)
-            #Write the updated data row to the output CSV file
-            writer.writerow(row)
+# Segments data into 5 second windows        
+def split_data_into_windows(group_data, group_windows, samples_per_window):
+    for i in range(0, len(group_data), samples_per_window):
+        # Get the current window of data
+        window = group_data.iloc[i:i+samples_per_window]
+        # Check if the window contains enough samples
+        if len(window) == samples_per_window:
+            # Add the windowed data to the list
+            group_windows.append(window)
 
-with open('./Data/Daniel/Left pocket walking/Raw Data.csv', 'r') as infile:
-    with open('./Data/Daniel/NewData/DWLP.csv', 'w') as outfile:
-        # Create a CSV reader and writer objects
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile, lineterminator='\n')
-        # Read the header row from the input CSV file
-        header_row = next(reader)
-        # Add the new column title to the header row
-        header_row.append(column_name)
-        # Write the updated header row to the output CSV file
-        writer.writerow(header_row)
-        # Loop through each data row in the input CSV file
-        for row in reader:
-            #Add the new column value to the data row
-            row.append(value_name)
-            #Write the updated data row to the output CSV file
-            writer.writerow(row)
-
-with open('./Data/Daniel/Right pocket walking/Raw Data.csv', 'r') as infile:
-    with open('./Data/Daniel/NewData/DWRP.csv', 'w') as outfile:
-        # Create a CSV reader and writer objects
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile, lineterminator='\n')
-        # Read the header row from the input CSV file
-        header_row = next(reader)
-        # Add the new column title to the header row
-        header_row.append(column_name)
-        # Write the updated header row to the output CSV file
-        writer.writerow(header_row)
-        # Loop through each data row in the input CSV file
-        for row in reader:
-            #Add the new column value to the data row
-            row.append(value_name)
-            #Write the updated data row to the output CSV file
-            writer.writerow(row)
+#Daniel Data
+extract_data('./Data/Daniel/Jumping Left pocket/Raw Data.csv', './Data/Daniel/NewData/DJLP.csv', column_name, value_name2)
+extract_data('./Data/Daniel/Jumping Right pocket/Raw Data.csv', './Data/Daniel/NewData/DJRP.csv', column_name, value_name2)
+extract_data('./Data/Daniel/Left pocket walking/Raw Data.csv', './Data/Daniel/NewData/DWLP.csv', column_name, value_name)
+extract_data('./Data/Daniel/Right pocket walking/Raw Data.csv', './Data/Daniel/NewData/DWRP.csv', column_name, value_name)
 
 #Josh Data
-with open('./Data/Josh/jump LP/Raw Data.csv', 'r') as infile:
-    with open('./Data/Josh/NewData/JJLP.csv', 'w') as outfile:
-        # Create a CSV reader and writer objects
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile, lineterminator='\n')
-        # Read the header row from the input CSV file
-        header_row = next(reader)
-        # Add the new column title to the header row
-        header_row.append(column_name)
-        # Write the updated header row to the output CSV file
-        writer.writerow(header_row)
-        # Loop through each data row in the input CSV file
-        for row in reader:
-            #Add the new column value to the data row
-            row.append(value_name2)
-            #Write the updated data row to the output CSV file
-            writer.writerow(row)
+extract_data('./Data/Josh/jump LP/Raw Data.csv', './Data/Josh/NewData/JJLP.csv', column_name, value_name2)
+extract_data('./Data/Josh/jump RP/Raw Data.csv', './Data/Josh/NewData/JJRP.csv', column_name, value_name2)
+extract_data('./Data/Josh/walk LP/Raw Data.csv', './Data/Josh/NewData/JWLP.csv', column_name, value_name)
+extract_data('./Data/Josh/walk RP/Raw Data.csv', './Data/Josh/NewData/JWRP.csv', column_name, value_name)
 
-with open('./Data/Josh/jump RP/Raw Data.csv', 'r') as infile:
-    with open('./Data/Josh/NewData/JJRP.csv', 'w') as outfile:
-        # Create a CSV reader and writer objects
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile, lineterminator='\n')
-        # Read the header row from the input CSV file
-        header_row = next(reader)
-        # Add the new column title to the header row
-        header_row.append(column_name)
-        # Write the updated header row to the output CSV file
-        writer.writerow(header_row)
-        # Loop through each data row in the input CSV file
-        for row in reader:
-            #Add the new column value to the data row
-            row.append(value_name2)
-            #Write the updated data row to the output CSV file
-            writer.writerow(row)
-
-with open('./Data/Josh/walk LP/Raw Data.csv', 'r') as infile:
-    with open('./Data/Josh/NewData/JWLP.csv', 'w') as outfile:
-        # Create a CSV reader and writer objects
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile, lineterminator='\n')
-        # Read the header row from the input CSV file
-        header_row = next(reader)
-        # Add the new column title to the header row
-        header_row.append(column_name)
-        # Write the updated header row to the output CSV file
-        writer.writerow(header_row)
-        # Loop through each data row in the input CSV file
-        for row in reader:
-            #Add the new column value to the data row
-            row.append(value_name)
-            #Write the updated data row to the output CSV file
-            writer.writerow(row)
-
-with open('./Data/Josh/walk RP/Raw Data.csv', 'r') as infile:
-    with open('./Data/Josh/NewData/JWRP.csv', 'w') as outfile:
-        # Create a CSV reader and writer objects
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile, lineterminator='\n')
-        # Read the header row from the input CSV file
-        header_row = next(reader)
-        # Add the new column title to the header row
-        header_row.append(column_name)
-        # Write the updated header row to the output CSV file
-        writer.writerow(header_row)
-        # Loop through each data row in the input CSV file
-        for row in reader:
-            #Add the new column value to the data row
-            row.append(value_name)
-            #Write the updated data row to the output CSV file
-            writer.writerow(row)
 
 # importing Data into python
 # Daniel
-G1Data = pd.read_csv(
+G1Data1 = pd.read_csv(
     './Data/Daniel/NewData/DJLP.csv',sep=",")
 G1Data2 = pd.read_csv(
     './Data/Daniel/NewData/DJRP.csv',sep=",")
@@ -181,7 +77,7 @@ G1Data3 = pd.read_csv(
 G1Data4 = pd.read_csv(
     './Data/Daniel/NewData/DWRP.csv',sep=",")
 # Josh
-G2Data = pd.read_csv(
+G2Data1 = pd.read_csv(
     './Data/Josh/NewData/JJLP.csv',sep=",")
 G2Data2 = pd.read_csv(
     './Data/Josh/NewData/JJRP.csv',sep=",")
@@ -194,91 +90,34 @@ G2Data4 = pd.read_csv(
 # divide each signal into 5 second windows
 window_size = 5  # seconds
 window_stride = 1  # second
-G1Data_windows = []
+G1Data1_windows = []
 G1Data2_windows = []
 G1Data3_windows = []
 G1Data4_windows = []
-G2Data_windows = []
+G2Data1_windows = []
 G2Data2_windows = []
 G2Data3_windows = []
 G2Data4_windows = []
 
-samples_per_window = int(window_size / G1Data['Time (s)'].diff().mean())
-
-# Daniel
-for i in range(0, len(G1Data), samples_per_window):
-    # Get the current window of data
-    window = G1Data.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G1Data_windows.append(window)
-
-for i in range(0, len(G1Data2), samples_per_window):
-    # Get the current window of data
-    window = G1Data2.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G1Data2_windows.append(window)
-
-for i in range(0, len(G1Data3), samples_per_window):
-    # Get the current window of data
-    window = G1Data3.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G1Data3_windows.append(window)
-
-for i in range(0, len(G1Data4), samples_per_window):
-    # Get the current window of data
-    window = G1Data4.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G1Data4_windows.append(window)
-
-samples_per_window = int(window_size / G2Data['Time (s)'].diff().mean())
-
-# Josh
-for i in range(0, len(G2Data), samples_per_window):
-    # Get the current window of data
-    window = G2Data.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G2Data_windows.append(window)
-
-for i in range(0, len(G2Data2), samples_per_window):
-    # Get the current window of data
-    window = G2Data2.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G2Data2_windows.append(window)
-
-for i in range(0, len(G2Data3), samples_per_window):
-    # Get the current window of data
-    window = G2Data3.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G2Data3_windows.append(window)
-
-for i in range(0, len(G2Data4), samples_per_window):
-    # Get the current window of data
-    window = G2Data4.iloc[i:i+samples_per_window]
-    # Check if the window contains enough samples
-    if len(window) == samples_per_window:
-        # Add the windowed data to the list
-        G2Data4_windows.append(window)
+#Daniel
+samples_per_window = int(window_size / G1Data1['Time (s)'].diff().mean())
+split_data_into_windows(G1Data1, G1Data1_windows, samples_per_window)
+split_data_into_windows(G1Data2, G1Data2_windows, samples_per_window)
+split_data_into_windows(G1Data3, G1Data3_windows, samples_per_window)
+split_data_into_windows(G1Data4, G1Data4_windows, samples_per_window)
+#Josh
+samples_per_window = int(window_size / G2Data1['Time (s)'].diff().mean())
+split_data_into_windows(G2Data1, G2Data1_windows, samples_per_window)
+split_data_into_windows(G2Data2, G2Data2_windows, samples_per_window)
+split_data_into_windows(G2Data3, G2Data3_windows, samples_per_window)
+split_data_into_windows(G2Data4, G2Data4_windows, samples_per_window)
 
 #Combining the two Jumping window lists together, same applys for the walking sets
 
 jumping_list = []
 walking_list = []
 
-for lst in [G1Data_windows, G1Data2_windows, G2Data_windows, G2Data2_windows]:
+for lst in [G1Data1_windows, G1Data2_windows, G2Data1_windows, G2Data2_windows]:
     jumping_list.extend(lst)
 for lst in [G1Data3_windows, G1Data4_windows, G2Data3_windows, G2Data4_windows]:
     walking_list.extend(lst)
@@ -302,12 +141,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, shuffle
 # putting data into the hdf5 file
 with h5py.File('./hdf5_groups.h5', 'w') as hdf:
     G1 = hdf.create_group('Daniel')
-    G1.create_dataset('Jumping Left', data=G1Data)
+    G1.create_dataset('Jumping Left', data=G1Data1)
     G1.create_dataset('Jumping Right', data=G1Data2)
     G1.create_dataset('Walking Left', data=G1Data3)
     G1.create_dataset('Walking Right', data=G1Data4)
     G2 = hdf.create_group('/Josh')
-    G2.create_dataset('Jumping Left', data=G2Data)
+    G2.create_dataset('Jumping Left', data=G2Data1)
     G2.create_dataset('Jumping Right', data=G2Data2)
     G2.create_dataset('Walking Left', data=G2Data3)
     G2.create_dataset('Walking Right', data=G2Data4)
