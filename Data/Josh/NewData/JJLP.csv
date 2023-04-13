@@ -1,4 +1,4 @@
-Time (s),Linear Acceleration x (m/s^2),Linear Acceleration y (m/s^2),Linear Acceleration z (m/s^2),Absolute acceleration (m/s^2),WalkingJumping
+Time (s),Acceleration x (m/s^2),Acceleration y (m/s^2),Acceleration z (m/s^2),Absolute acceleration (m/s^2),WalkingJumping
 7.490624994E-3,6.995082557E-2,-5.267201096E-2,-6.472008187E-1,6.530975106E-1,1
 1.741262499E-2,2.859525266E-1,-5.343887329E-2,-9.129649562E-1,9.581907805E-1,1
 2.733562500E-2,4.864298701E-1,-1.146846566E-1,-1.229006377E0,1.326734060E0,1
