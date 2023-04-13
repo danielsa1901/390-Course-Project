@@ -13,8 +13,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.decomposition import PCA
 from scipy.stats import skew
+from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay, accuracy_score, confusion_matrix, f1_score, recall_score, roc_auc_score, roc_curve
 
-# for debugging
+# for output visualization
 np.set_printoptions(threshold=np.inf)
 pd.set_option('display.max_columns', None)
 
@@ -89,34 +90,23 @@ G2Data4 = pd.read_csv(
 #smooth and normalize data first, then split it up
 scaler = StandardScaler()
 
-jump_1_normal = scaler.fit_transform(G1Data1)
-jump_2_normal = scaler.fit_transform(G1Data2)
-jump_3_normal = scaler.fit_transform(G1Data3)
-jump_4_normal = scaler.fit_transform(G1Data4)
-walk_1_normal = scaler.fit_transform(G2Data1)
-walk_2_normal = scaler.fit_transform(G2Data2)
-walk_3_normal = scaler.fit_transform(G2Data3)
-walk_4_normal = scaler.fit_transform(G2Data4)
+def SmoothNormalize(dataframe):
+    otherColumns = dataframe[['Time (s)', 'WalkingJumping']]
+    data = dataframe[['Linear Acceleration x (m/s^2)', 'Linear Acceleration y (m/s^2)', 'Linear Acceleration z (m/s^2)', 'Absolute acceleration (m/s^2)']]
+    data_smoothed = data.rolling(window=5).mean().dropna() #moving average filter
+    data_normalized = scaler.fit_transform(data_smoothed) #normalize
+    df_smoothed_normalized = pd.DataFrame(data=data_normalized, columns=data.columns) #add time and WalkingJumping column back in
+    df_smoothed_normalized[['Time (s)', 'WalkingJumping']] = otherColumns[len(data) - len(data_smoothed):] #add time and WalkingJumping column back in
+    return df_smoothed_normalized
 
-jump_1 = pd.DataFrame(jump_1_normal)
-jump_2 = pd.DataFrame(jump_2_normal)
-jump_3 = pd.DataFrame(jump_3_normal)
-jump_4 = pd.DataFrame(jump_4_normal)
-walk_1 = pd.DataFrame(walk_1_normal)
-walk_2 = pd.DataFrame(walk_2_normal)
-walk_3 = pd.DataFrame(walk_3_normal)
-walk_4 = pd.DataFrame(walk_4_normal)
-
-jump1Smooth = jump_1.rolling(window_size).mean().dropna()
-jump2Smooth = jump_2.rolling(window_size).mean().dropna()
-jump3Smooth = jump_3.rolling(window_size).mean().dropna()
-jump4Smooth = jump_4.rolling(window_size).mean().dropna()
-walk1Smooth = walk_1.rolling(window_size).mean().dropna()
-walk2Smooth = walk_2.rolling(window_size).mean().dropna()
-walk3Smooth = walk_3.rolling(window_size).mean().dropna()
-walk4Smooth = walk_4.rolling(window_size).mean().dropna()
-
-print(jump1Smooth)
+jump1Smooth = SmoothNormalize(G1Data1).dropna()
+jump2Smooth = SmoothNormalize(G1Data2).dropna()
+jump3Smooth = SmoothNormalize(G1Data3).dropna()
+jump4Smooth = SmoothNormalize(G1Data4).dropna()
+walk1Smooth = SmoothNormalize(G2Data1).dropna()
+walk2Smooth = SmoothNormalize(G2Data2).dropna()
+walk3Smooth = SmoothNormalize(G2Data3).dropna()
+walk4Smooth = SmoothNormalize(G2Data4).dropna()
 
 # divide each signal into 5 second windows
 window_stride = 1  # second
@@ -169,7 +159,6 @@ X = data.drop(columns=['WalkingJumping'])
 y = data['WalkingJumping']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42, shuffle=False, stratify=None)
 
-
 # # putting data into the hdf5 file
 # with h5py.File('./hdf5_groups.h5', 'w') as hdf:
 #     G1 = hdf.create_group('Daniel')
@@ -212,8 +201,6 @@ def extract_features(window):
 X_train_features = [extract_features(window) for window in X_train.values]
 X_test_features = [extract_features(window) for window in X_test.values]
 
-y_train = y_train[:-4]
-y_test = y_test[:-4]
 
 #Classifier
 # Train the logistic regression model
@@ -222,8 +209,25 @@ clf.fit(X_train_features, y_train)
 
 # Predict the labels for the test set
 y_pred = clf.predict(X_test_features)
+y_clf_prob = clf.predict_proba(X_test_features)
 
 # Compute the accuracy of the model
 accuracy = accuracy_score(y_test, y_pred)
+#print('y_pred: ', y_pred)
+#print('y_clf_prob: ', y_clf_prob)
 print("Accuracy: {:.2f}%".format(accuracy * 100))
+# recall = recall_score(y_test, y_pred) 
+# print('Recall: ', recall)
 
+cm = confusion_matrix(y_test, y_pred)
+cm_display = ConfusionMatrixDisplay(cm).plot()
+plt.show()
+
+# fpr, tpr, _ = roc_curve(y_test, y_clf_prob[:, 1], pos_label=clf.classes_[1])
+# roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr).plot()
+
+# auc = roc_auc_score(y_test, y_clf_prob[:, 1])
+# print('AUC: ', auc)
+
+# f1score = f1_score(y_test, y_pred)
+# print('F1 Score: ', f1score)
