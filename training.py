@@ -14,12 +14,16 @@ from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.decomposition import PCA
 from scipy.stats import skew
 
+# for debugging
+np.set_printoptions(threshold=np.inf)
+
 # add additional column in each csv to specify walking or jumping (for the training model), 0 or 1 has to be used to avoid issues with h5py
 column_name = "WalkingJumping"
 value_name = 0
 value_name2 = 1
 
 # Open the CSV file for reading and writing
+# Daniel Data
 with open('./Data/Daniel/Jumping Left pocket/Raw Data.csv', 'r') as infile:
     with open('./Data/Daniel/NewData/DJLP.csv', 'w') as outfile:
         # Create a CSV reader and writer objects
@@ -92,7 +96,81 @@ with open('./Data/Daniel/Right pocket walking/Raw Data.csv', 'r') as infile:
             #Write the updated data row to the output CSV file
             writer.writerow(row)
 
+#Josh Data
+with open('./Data/Josh/jump LP/Raw Data.csv', 'r') as infile:
+    with open('./Data/Josh/NewData/JJLP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name2)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
+
+with open('./Data/Josh/jump RP/Raw Data.csv', 'r') as infile:
+    with open('./Data/Josh/NewData/JJRP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name2)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
+
+with open('./Data/Josh/walk LP/Raw Data.csv', 'r') as infile:
+    with open('./Data/Josh/NewData/JWLP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
+
+with open('./Data/Josh/walk RP/Raw Data.csv', 'r') as infile:
+    with open('./Data/Josh/NewData/JWRP.csv', 'w') as outfile:
+        # Create a CSV reader and writer objects
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile, lineterminator='\n')
+        # Read the header row from the input CSV file
+        header_row = next(reader)
+        # Add the new column title to the header row
+        header_row.append(column_name)
+        # Write the updated header row to the output CSV file
+        writer.writerow(header_row)
+        # Loop through each data row in the input CSV file
+        for row in reader:
+            #Add the new column value to the data row
+            row.append(value_name)
+            #Write the updated data row to the output CSV file
+            writer.writerow(row)
+
 # importing Data into python
+# Daniel
 G1Data = pd.read_csv(
     './Data/Daniel/NewData/DJLP.csv',sep=",")
 G1Data2 = pd.read_csv(
@@ -101,6 +179,15 @@ G1Data3 = pd.read_csv(
     './Data/Daniel/NewData/DWLP.csv',sep=",")
 G1Data4 = pd.read_csv(
     './Data/Daniel/NewData/DWRP.csv',sep=",")
+# Josh
+G2Data = pd.read_csv(
+    './Data/Josh/NewData/JJLP.csv',sep=",")
+G2Data2 = pd.read_csv(
+    './Data/Josh/NewData/JJRP.csv',sep=",")
+G2Data3 = pd.read_csv(
+    './Data/Josh/NewData/JWLP.csv',sep=",")
+G2Data4 = pd.read_csv(
+    './Data/Josh/NewData/JWRP.csv',sep=",")
 
 #divided the data into 5 second segments, shuffling it, and splitting it into a ratio of 90:10 for training and testing
 # divide each signal into 5 second windows
@@ -110,9 +197,14 @@ G1Data_windows = []
 G1Data2_windows = []
 G1Data3_windows = []
 G1Data4_windows = []
+G2Data_windows = []
+G2Data2_windows = []
+G2Data3_windows = []
+G2Data4_windows = []
 
 samples_per_window = int(window_size / G1Data['Time (s)'].diff().mean())
 
+# Daniel
 for i in range(0, len(G1Data), samples_per_window):
     # Get the current window of data
     window = G1Data.iloc[i:i+samples_per_window]
@@ -145,20 +237,65 @@ for i in range(0, len(G1Data4), samples_per_window):
         # Add the windowed data to the list
         G1Data4_windows.append(window)
 
+# Josh
+for i in range(0, len(G2Data), samples_per_window):
+    # Get the current window of data
+    window = G2Data.iloc[i:i+samples_per_window]
+    # Check if the window contains enough samples
+    if len(window) == samples_per_window:
+        # Add the windowed data to the list
+        G2Data_windows.append(window)
+
+for i in range(0, len(G2Data2), samples_per_window):
+    # Get the current window of data
+    window = G2Data2.iloc[i:i+samples_per_window]
+    # Check if the window contains enough samples
+    if len(window) == samples_per_window:
+        # Add the windowed data to the list
+        G2Data2_windows.append(window)
+
+for i in range(0, len(G2Data3), samples_per_window):
+    # Get the current window of data
+    window = G2Data3.iloc[i:i+samples_per_window]
+    # Check if the window contains enough samples
+    if len(window) == samples_per_window:
+        # Add the windowed data to the list
+        G2Data3_windows.append(window)
+
+for i in range(0, len(G2Data4), samples_per_window):
+    # Get the current window of data
+    window = G2Data4.iloc[i:i+samples_per_window]
+    # Check if the window contains enough samples
+    if len(window) == samples_per_window:
+        # Add the windowed data to the list
+        G2Data4_windows.append(window)
+
 #Combining the two Jumping window lists together, same applys for the walking sets
-G1Data_windows.extend(G1Data2_windows)
-G1Data3_windows.extend(G1Data4_windows)
+
+jumping_list = []
+walking_list = []
+
+for lst in [G1Data_windows, G1Data2_windows, G2Data_windows, G2Data2_windows]:
+    jumping_list.extend(lst)
+for lst in [G1Data3_windows, G1Data4_windows, G2Data3_windows, G2Data4_windows]:
+    walking_list.extend(lst)
+
 #shuffling the data
-random.shuffle(G1Data_windows)
-random.shuffle(G1Data3_windows)
+random.shuffle(jumping_list)
+random.shuffle(walking_list)
+
+print(jumping_list)
+
 # Concatenate the windowed data into a new DataFrame
-jumping_df = pd.concat(G1Data_windows)
-walking_df = pd.concat(G1Data3_windows)
+jumping_df = pd.concat(jumping_list)
+walking_df = pd.concat(walking_list)
 data = pd.concat([jumping_df, walking_df])
+
 #splitting it 90:10
 X = data.drop(columns=['WalkingJumping'])
 y = data['WalkingJumping']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, shuffle=False, stratify=None)
+
 
 # putting data into the hdf5 file
 with h5py.File('./hdf5_groups.h5', 'w') as hdf:
@@ -168,6 +305,10 @@ with h5py.File('./hdf5_groups.h5', 'w') as hdf:
     G1.create_dataset('Walking Left', data=G1Data3)
     G1.create_dataset('Walking Right', data=G1Data4)
     G2 = hdf.create_group('/Josh')
+    G2.create_dataset('Jumping Left', data=G2Data)
+    G2.create_dataset('Jumping Right', data=G2Data2)
+    G2.create_dataset('Walking Left', data=G2Data3)
+    G2.create_dataset('Walking Right', data=G2Data4)
     G3 = hdf.create_group('/Bradley')
     G4 = hdf.create_group('/Dataset')
     G5 = hdf.create_group('/Dataset/Testing')
@@ -184,40 +325,40 @@ with h5py.File('./hdf5_groups.h5', 'w') as hdf:
 X_train_smoothed = X_train.rolling(window_size).mean()
 X_test_smoothed = X_test.rolling(window_size).mean()
 
-# Feature Extraction
-def extract_features(window):
-    features = []
-    features.append(np.min(window))
-    features.append(np.max(window))
-    features.append(np.max(window) - np.min(window))
-    features.append(np.mean(window))
-    features.append(np.median(window))
-    features.append(np.var(window))
-    features.append(skew(window))
-    return features
+# # Feature Extraction
+# def extract_features(window):
+#     features = []
+#     features.append(np.min(window))
+#     features.append(np.max(window))
+#     features.append(np.max(window) - np.min(window))
+#     features.append(np.mean(window))
+#     features.append(np.median(window))
+#     features.append(np.var(window))
+#     features.append(skew(window))
+#     return features
 
-X_train_features = [extract_features(window) for window in X_train_smoothed.values]
-X_test_features = [extract_features(window) for window in X_test_smoothed.values]
+# X_train_features = [extract_features(window) for window in X_train_smoothed.values]
+# X_test_features = [extract_features(window) for window in X_test_smoothed.values]
 
-train_df = pd.DataFrame(X_train_features)
-train_df = train_df.dropna()
-X_train_features = train_df.to_numpy()
+# train_df = pd.DataFrame(X_train_features)
+# train_df = train_df.dropna()
+# X_train_features = train_df.to_numpy()
 
-test_df = pd.DataFrame(X_test_features)
-test_df = test_df.dropna()
-X_test_features = test_df.to_numpy()
+# test_df = pd.DataFrame(X_test_features)
+# test_df = test_df.dropna()
+# X_test_features = test_df.to_numpy()
 
-y_train = y_train[:-4]
-y_test = y_test[:-4]
+# y_train = y_train[:-4]
+# y_test = y_test[:-4]
 
-#Classifier
-# Train the logistic regression model
-clf = LogisticRegression(random_state=0, max_iter=1000).fit(X_train_features, y_train)
+# #Classifier
+# # Train the logistic regression model
+# clf = LogisticRegression(random_state=0, max_iter=1000).fit(X_train_features, y_train)
 
-# Predict the labels for the test set
-y_pred = clf.predict(X_test_features)
+# # Predict the labels for the test set
+# y_pred = clf.predict(X_test_features)
 
-# Compute the accuracy of the model
-accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy: {:.2f}%".format(accuracy * 100))
+# # Compute the accuracy of the model
+# accuracy = accuracy_score(y_test, y_pred)
+# print("Accuracy: {:.2f}%".format(accuracy * 100))
 
