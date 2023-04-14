@@ -1,0 +1,15 @@
+Got it to work!
+
+Without normalization, we get accuracy's in the 90's
+with normalization, we get accuracy's in the 70's, 80's, and sometimes 90's
+
+idk which one we should use, but multiple models have been dumped in the following files:
+
+test.joblib
+test2.joblib
+test3.joblib
+test4.joblib
+
+if you wanna run the model yourself, i suggest you changed the filename of the dump location so you don't overwrite the models we have!
+Thanks,
+Daniel
