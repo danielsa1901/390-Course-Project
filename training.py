@@ -1,4 +1,5 @@
 # Needed libraries
+import joblib
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
@@ -67,6 +68,12 @@ extract_data('./Data/TestData6/Walking2.csv', './Data/TestData6/NewWalking2.csv'
 extract_data('./Data/TestData7/Walking3.csv', './Data/TestData7/NewWalking3.csv', column_name, value_name)
 extract_data('./Data/TestData8/Walking4.csv', './Data/TestData8/NewWalking4.csv', column_name, value_name)
 
+# Josh's Data
+extract_data('./Data/Josh/jump LP/Raw Data.csv', './Data/Josh/NewData/JJLP.csv', column_name, value_name2)
+extract_data('./Data/Josh/jump RP/Raw Data.csv', './Data/Josh/NewData/JJRP.csv', column_name, value_name2)
+extract_data('./Data/Josh/walk LP/Raw Data.csv', './Data/Josh/NewData/JWLP.csv', column_name, value_name)
+extract_data('./Data/Josh/walk RP/Raw Data.csv', './Data/Josh/NewData/JWRP.csv', column_name, value_name)
+
 # importing Data into python
 # Jumping
 G1Data1 = pd.read_csv(
@@ -87,6 +94,17 @@ G2Data3 = pd.read_csv(
 G2Data4 = pd.read_csv(
     './Data/TestData8/NewWalking4.csv',sep=",")
 
+# Jumping Josh
+G1Data5 = pd.read_csv(
+    './Data/Josh/NewData/JJLP.csv',sep=",")
+G1Data6 = pd.read_csv(
+    './Data/Josh/NewData/JJRP.csv',sep=",")
+G2Data5 = pd.read_csv(
+    './Data/Josh/NewData/JWLP.csv',sep=",")
+G2Data6 = pd.read_csv(
+    './Data/Josh/NewData/JWRP.csv',sep=",")
+# Walking Josh
+
 #divided the data into 5 second segments, shuffling it, and splitting it into a ratio of 90:10 for training and testing
 #smooth and normalize data first, then split it up
 scaler = StandardScaler()
@@ -94,7 +112,7 @@ scaler = StandardScaler()
 def SmoothNormalize(dataframe):
     otherColumns = dataframe[['Time (s)', 'WalkingJumping']]
     data = dataframe[['Linear Acceleration x (m/s^2)', 'Linear Acceleration y (m/s^2)', 'Linear Acceleration z (m/s^2)', 'Absolute acceleration (m/s^2)']]
-    data_smoothed = data.rolling(window=5).mean().dropna() #moving average filter
+    data_smoothed = data.rolling(window=50).mean().dropna() #moving average filter
     data_normalized = scaler.fit_transform(data_smoothed) #normalize
     df_smoothed_normalized = pd.DataFrame(data=data_normalized, columns=data.columns) #add time and WalkingJumping column back in
     df_smoothed_normalized[['Time (s)', 'WalkingJumping']] = otherColumns[len(data) - len(data_smoothed):] #add time and WalkingJumping column back in
@@ -109,6 +127,12 @@ walk2Smooth = SmoothNormalize(G2Data2).dropna()
 walk3Smooth = SmoothNormalize(G2Data3).dropna()
 walk4Smooth = SmoothNormalize(G2Data4).dropna()
 
+#Josh's Data
+jump5Smooth = SmoothNormalize(G1Data5).dropna()
+jump6Smooth = SmoothNormalize(G1Data6).dropna()
+walk5Smooth = SmoothNormalize(G2Data5).dropna()
+walk6Smooth = SmoothNormalize(G2Data6).dropna()
+
 # divide each signal into 5 second windows
 window_stride = 1  # second
 #jumping
@@ -116,11 +140,18 @@ G1Data1_windows = []
 G1Data2_windows = []
 G1Data3_windows = []
 G1Data4_windows = []
+
+G1Data5_windows = []
+G1Data6_windows = []
+
 #walking
 G2Data1_windows = []
 G2Data2_windows = []
 G2Data3_windows = []
 G2Data4_windows = []
+
+G2Data5_windows = []
+G2Data6_windows = []
 
 #Jumping
 samples_per_window = int(window_size / G1Data1['Time (s)'].diff().mean())
@@ -128,6 +159,9 @@ split_data_into_windows(jump1Smooth, G1Data1_windows, samples_per_window)
 split_data_into_windows(jump2Smooth, G1Data2_windows, samples_per_window)
 split_data_into_windows(jump3Smooth, G1Data3_windows, samples_per_window)
 split_data_into_windows(jump4Smooth, G1Data4_windows, samples_per_window)
+
+split_data_into_windows(jump5Smooth, G1Data5_windows, samples_per_window)
+split_data_into_windows(jump6Smooth, G1Data6_windows, samples_per_window)
 #Walking
 samples_per_window = int(window_size / G2Data1['Time (s)'].diff().mean())
 split_data_into_windows(walk1Smooth, G2Data1_windows, samples_per_window)
@@ -135,14 +169,17 @@ split_data_into_windows(walk2Smooth, G2Data2_windows, samples_per_window)
 split_data_into_windows(walk3Smooth, G2Data3_windows, samples_per_window)
 split_data_into_windows(walk4Smooth, G2Data4_windows, samples_per_window)
 
+split_data_into_windows(walk5Smooth, G2Data5_windows, samples_per_window)
+split_data_into_windows(walk6Smooth, G2Data6_windows, samples_per_window)
+
 #Combining the two Jumping window lists together, same applys for the walking sets
 
 jumping_list = []
 walking_list = []
 
-for lst in [G1Data1_windows, G1Data2_windows, G1Data3_windows, G1Data4_windows]:
+for lst in [G1Data1_windows, G1Data2_windows, G1Data3_windows, G1Data4_windows, G1Data5_windows, G1Data6_windows]:
     jumping_list.extend(lst)
-for lst in [G2Data1_windows, G2Data2_windows, G2Data3_windows, G2Data4_windows]:
+for lst in [G2Data1_windows, G2Data2_windows, G2Data3_windows, G2Data4_windows, G2Data5_windows, G2Data6_windows]:
     walking_list.extend(lst)
 
 #shuffling the data
@@ -189,41 +226,109 @@ l_reg = LogisticRegression(max_iter=10000)
 # Feature Extraction
 def extract_features(window):
     features = []
-    features.append(np.min(window))
-    features.append(np.max(window))
-    features.append(np.max(window) - np.min(window))
-    features.append(np.mean(window))
-    features.append(np.median(window))
-    features.append(np.var(window))
-    features.append(skew(window))
-    features.append(np.std(window))
-    features.append(np.sqrt(np.mean(np.square(window))))
-    features.append(kurtosis(window))
+    x_acc = window["Linear Acceleration x (m/s^2)"]
+    y_acc = window["Linear Acceleration y (m/s^2)"]
+    z_acc = window["Linear Acceleration z (m/s^2)"]
+    abs_acc = window["Absolute acceleration (m/s^2)"]
+    features.append(np.min(x_acc))
+    features.append(np.min(y_acc))
+    features.append(np.min(z_acc))
+    features.append(np.max(x_acc))
+    features.append(np.max(y_acc))
+    features.append(np.max(z_acc))
+    features.append(np.max(x_acc)-np.min(x_acc))
+    features.append(np.max(y_acc)-np.min(y_acc))
+    features.append(np.max(z_acc)-np.min(z_acc))
+    features.append(np.mean(x_acc))
+    features.append(np.mean(y_acc))
+    features.append(np.mean(z_acc))
+    features.append(np.median(x_acc))
+    features.append(np.median(y_acc))
+    features.append(np.median(z_acc))
+    features.append(np.var(x_acc))
+    features.append(np.var(y_acc))
+    features.append(np.var(z_acc))
+    features.append(skew(x_acc))
+    features.append(skew(y_acc))
+    features.append(skew(z_acc))
+    features.append(np.std(x_acc))
+    features.append(np.std(y_acc))
+    features.append(np.std(z_acc))
+    features.append(np.sqrt(np.mean(np.square(x_acc))))
+    features.append(np.sqrt(np.mean(np.square(y_acc))))
+    features.append(np.sqrt(np.mean(np.square(z_acc))))
+    features.append(kurtosis(x_acc))
+    features.append(kurtosis(y_acc))
+    features.append(kurtosis(z_acc))
+    #test
+    features.append(np.min(abs_acc))
+    features.append(np.max(abs_acc))
+    features.append(np.max(abs_acc)-np.min(abs_acc))
+    features.append(np.mean(abs_acc))
+    features.append(np.median(abs_acc))
+    features.append(np.var(abs_acc))
+    features.append(skew(abs_acc))
+    features.append(np.std(abs_acc))
+    features.append(np.sqrt(np.mean(np.square(abs_acc))))
+    features.append(kurtosis(abs_acc))
     return features
 
-X_train_features = [extract_features(window) for window in X_train.values]
-X_test_features = [extract_features(window) for window in X_test.values]
+#split X_train and X_test into a list of dataframes, y_train and y_test will have to have there labels adjusted
+X_train_windows = []
+X_test_windows = []
+Y_train_labels = []
+Y_test_labels = []
+
+i=0
+while i < len(X_train):
+    window = X_train.iloc[i:i+samples_per_window]
+    X_train_windows.append(window)
+    i=i+samples_per_window
+i=0
+while i < len(X_test):
+    window = X_test.iloc[i:i+samples_per_window]
+    X_test_windows.append(window)
+    i=i+samples_per_window
+
+i=0
+while i < len(y_train):
+    Y_train_labels.append(y_train.iloc[i])
+    i = i+samples_per_window
+
+i=0
+while i < len(y_test):
+    Y_test_labels.append(y_test.iloc[i])
+    i = i+samples_per_window
+
+#these are dictionaries after the extract function is ran**
+# X_train_features = [pd.DataFrame.from_dict(extract_features(window), orient="index").T for window in X_train_windows]
+# X_test_features = [pd.DataFrame.from_dict(extract_features(window), orient="index").T for window in X_test_windows]
+X_train_features = [extract_features(window) for window in X_train_windows]
+X_test_features = [extract_features(window) for window in X_test_windows]
 
 #Classifier
 # Train the logistic regression model
 clf = make_pipeline(scaler, l_reg)
-clf.fit(X_train_features, y_train)
+clf.fit(X_train_features, Y_train_labels)
 
 # Predict the labels for the test set
 y_pred = clf.predict(X_test_features)
 y_clf_prob = clf.predict_proba(X_test_features)
 
 # Compute the accuracy of the model
-accuracy = accuracy_score(y_test, y_pred)
+accuracy = accuracy_score(Y_test_labels, y_pred)
 #print('y_pred: ', y_pred)
 #print('y_clf_prob: ', y_clf_prob)
 print("Accuracy: {:.2f}%".format(accuracy * 100))
 # recall = recall_score(y_test, y_pred) 
 # print('Recall: ', recall)
 
-cm = confusion_matrix(y_test, y_pred)
+cm = confusion_matrix(Y_test_labels, y_pred)
 cm_display = ConfusionMatrixDisplay(cm).plot()
 plt.show()
+
+filename = 'test4.joblib'
+joblib.dump(clf, filename)
 
 # fpr, tpr, _ = roc_curve(y_test, y_clf_prob[:, 1], pos_label=clf.classes_[1])
 # roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr).plot()
