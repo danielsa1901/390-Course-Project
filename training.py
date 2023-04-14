@@ -14,6 +14,7 @@ from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.decomposition import PCA
 from scipy.stats import skew
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay, accuracy_score, confusion_matrix, f1_score, recall_score, roc_auc_score, roc_curve
+from scipy.stats import kurtosis
 
 # for output visualization
 np.set_printoptions(threshold=np.inf)
@@ -145,14 +146,13 @@ for lst in [G2Data1_windows, G2Data2_windows, G2Data3_windows, G2Data4_windows]:
     walking_list.extend(lst)
 
 #shuffling the data
-random.shuffle(jumping_list)
-random.shuffle(walking_list)
+full_list = []
 
+for lst in [jumping_list, walking_list]:
+    full_list.extend(lst)
+random.shuffle(full_list)
 # Concatenate the windowed data into a new DataFrame
-
-jumping_df = pd.concat(jumping_list)
-walking_df = pd.concat(walking_list)
-data = pd.concat([jumping_df, walking_df])
+data = pd.concat(full_list)
 
 #splitting it 90:10
 X = data.drop(columns=['WalkingJumping'])
@@ -196,11 +196,13 @@ def extract_features(window):
     features.append(np.median(window))
     features.append(np.var(window))
     features.append(skew(window))
+    features.append(np.std(window))
+    features.append(np.sqrt(np.mean(np.square(window))))
+    features.append(kurtosis(window))
     return features
 
 X_train_features = [extract_features(window) for window in X_train.values]
 X_test_features = [extract_features(window) for window in X_test.values]
-
 
 #Classifier
 # Train the logistic regression model
