@@ -320,21 +320,25 @@ accuracy = accuracy_score(Y_test_labels, y_pred)
 #print('y_pred: ', y_pred)
 #print('y_clf_prob: ', y_clf_prob)
 print("Accuracy: {:.2f}%".format(accuracy * 100))
-# recall = recall_score(y_test, y_pred) 
-# print('Recall: ', recall)
+recall = recall_score(Y_test_labels, y_pred) 
+print('Recall: ', recall)
 
 cm = confusion_matrix(Y_test_labels, y_pred)
 cm_display = ConfusionMatrixDisplay(cm).plot()
 plt.show()
 
-filename = 'test4.joblib'
+filename = 'ignore.joblib'
 joblib.dump(clf, filename)
 
-# fpr, tpr, _ = roc_curve(y_test, y_clf_prob[:, 1], pos_label=clf.classes_[1])
-# roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr).plot()
+fpr, tpr, _ = roc_curve(Y_test_labels, y_clf_prob[:, 1], pos_label=clf.classes_[1])
+roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr).plot()
+plt.show()
 
-# auc = roc_auc_score(y_test, y_clf_prob[:, 1])
-# print('AUC: ', auc)
+auc = roc_auc_score(Y_test_labels, y_clf_prob[:, 1])
+print('AUC: ', auc)
 
-# f1score = f1_score(y_test, y_pred)
-# print('F1 Score: ', f1score)
+f1score = f1_score(Y_test_labels, y_pred)
+print('F1 Score: ', f1score)
+
+print("Prediction Output:")
+print(y_pred)
