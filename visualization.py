@@ -43,16 +43,16 @@ def get_two_columns(pd_dataframe, col1_index, col2_index):
 # y_title = "Y Values"
 # scatter_plot(x_values, y_values, "Time", "Acceleration")
 
-df = pd.DataFrame({
-    'column1': [1, 2, 3, 4, 5],
-    'column2': [9, 8, 6, 4, 2],
-    'column3': ['a', 'b', 'c', 'd', 'e']
-})
+# df = pd.DataFrame({
+#     'column1': [1, 2, 3, 4, 5],
+#     'column2': [9, 8, 6, 4, 2],
+#     'column3': ['a', 'b', 'c', 'd', 'e']
+# })
 
-col1_idx = 0
-col2_idx = 1
+# col1_idx = 0
+# col2_idx = 1
 
-col1_values, col2_values = get_two_columns(df, col1_idx, col2_idx)
+# col1_values, col2_values = get_two_columns(df, col1_idx, col2_idx)
 
-print(col1_values)  # prints: [1 2 3 4 5]
-print(col2_values)  # prints: [10 8 6 4 2]
+# print(col1_values)  # prints: [1 2 3 4 5]
+# print(col2_values)  # prints: [10 8 6 4 2]
