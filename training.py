@@ -58,15 +58,17 @@ def split_data_into_windows(group_data, group_windows, samples_per_window):
             # Add the windowed data to the list
             group_windows.append(window)
 
-#test Data
-extract_data('./Data/TestData1/Jumping1.csv', './Data/TestData1/NewJumping1.csv', column_name, value_name2)
-extract_data('./Data/TestData2/Jumping2.csv', './Data/TestData2/NewJumping2.csv', column_name, value_name2)
-extract_data('./Data/TestData3/Jumping3.csv', './Data/TestData3/NewJumping3.csv', column_name, value_name2)
-extract_data('./Data/TestData4/Jumping4.csv', './Data/TestData4/NewJumping4.csv', column_name, value_name2)
-extract_data('./Data/TestData5/Walking1.csv', './Data/TestData5/NewWalking1.csv', column_name, value_name)
-extract_data('./Data/TestData6/Walking2.csv', './Data/TestData6/NewWalking2.csv', column_name, value_name)
-extract_data('./Data/TestData7/Walking3.csv', './Data/TestData7/NewWalking3.csv', column_name, value_name)
-extract_data('./Data/TestData8/Walking4.csv', './Data/TestData8/NewWalking4.csv', column_name, value_name)
+#Daniel's Data
+extract_data('./Data/DanielJumpL/Jumping1.csv', './Data/DanielJumpL/NewJumping1.csv', column_name, value_name2)
+extract_data('./Data/DanielJumpR/Jumping2.csv', './Data/DanielJumpR/NewJumping2.csv', column_name, value_name2)
+extract_data('./Data/DanielWalkL/Walking1.csv', './Data/DanielWalkL/NewWalking1.csv', column_name, value_name)
+extract_data('./Data/DanielWalkR/Walking2.csv', './Data/DanielWalkR/NewWalking2.csv', column_name, value_name)
+
+#Bradley's Data
+extract_data('./Data/BradleyJumpL/Jumping3.csv', './Data/BradleyJumpL/NewJumping3.csv', column_name, value_name2)
+extract_data('./Data/BradleyJumpR/Jumping4.csv', './Data/BradleyJumpR/NewJumping4.csv', column_name, value_name2)
+extract_data('./Data/BradleyWalkL/Walking3.csv', './Data/BradleyWalkL/NewWalking3.csv', column_name, value_name)
+extract_data('./Data/BradleyWalkR/Walking4.csv', './Data/BradleyWalkR/NewWalking4.csv', column_name, value_name)
 
 # Josh's Data
 extract_data('./Data/Josh/jump LP/Raw Data.csv', './Data/Josh/NewData/JJLP.csv', column_name, value_name2)
@@ -75,26 +77,25 @@ extract_data('./Data/Josh/walk LP/Raw Data.csv', './Data/Josh/NewData/JWLP.csv',
 extract_data('./Data/Josh/walk RP/Raw Data.csv', './Data/Josh/NewData/JWRP.csv', column_name, value_name)
 
 # importing Data into python
-# Jumping
+# Daniel
 G1Data1 = pd.read_csv(
-    './Data/TestData1/NewJumping1.csv',sep=",")
+    './Data/DanielJumpL/NewJumping1.csv',sep=",")
 G1Data2 = pd.read_csv(
-    './Data/TestData2/NewJumping2.csv',sep=",")
-G1Data3 = pd.read_csv(
-    './Data/TestData3/NewJumping3.csv',sep=",")
-G1Data4 = pd.read_csv(
-    './Data/TestData4/NewJumping4.csv',sep=",")
-# Walking
+    './Data/DanielJumpR/NewJumping2.csv',sep=",")
 G2Data1 = pd.read_csv(
-    './Data/TestData5/NewWalking1.csv',sep=",")
+    './Data/DanielWalkL/NewWalking1.csv',sep=",")
 G2Data2 = pd.read_csv(
-    './Data/TestData6/NewWalking2.csv',sep=",")
+    './Data/DanielWalkR/NewWalking2.csv',sep=",")
+# Bradley
+G1Data3 = pd.read_csv(
+    './Data/BradleyJumpL/NewJumping3.csv',sep=",")
+G1Data4 = pd.read_csv(
+    './Data/BradleyJumpR/NewJumping4.csv',sep=",")
 G2Data3 = pd.read_csv(
-    './Data/TestData7/NewWalking3.csv',sep=",")
+    './Data/BradleyWalkL/NewWalking3.csv',sep=",")
 G2Data4 = pd.read_csv(
-    './Data/TestData8/NewWalking4.csv',sep=",")
-
-# Jumping Josh
+    './Data/BradleyWalkR/NewWalking4.csv',sep=",")
+# Josh
 G1Data5 = pd.read_csv(
     './Data/Josh/NewData/JJLP.csv',sep=",")
 G1Data6 = pd.read_csv(
@@ -103,7 +104,6 @@ G2Data5 = pd.read_csv(
     './Data/Josh/NewData/JWLP.csv',sep=",")
 G2Data6 = pd.read_csv(
     './Data/Josh/NewData/JWRP.csv',sep=",")
-# Walking Josh
 
 #divided the data into 5 second segments, shuffling it, and splitting it into a ratio of 90:10 for training and testing
 #smooth and normalize data first, then split it up
@@ -196,29 +196,22 @@ X = data.drop(columns=['WalkingJumping'])
 y = data['WalkingJumping']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42, shuffle=False, stratify=None)
 
-# # putting data into the hdf5 file
-# with h5py.File('./hdf5_groups.h5', 'w') as hdf:
-#     G1 = hdf.create_group('Daniel')
-#     G1.create_dataset('Jumping Left', data=G1Data1)
-#     G1.create_dataset('Jumping Right', data=G1Data2)
-#     G1.create_dataset('Walking Left', data=G1Data3)
-#     G1.create_dataset('Walking Right', data=G1Data4)
-#     G2 = hdf.create_group('/Josh')
-#     G2.create_dataset('Jumping Left', data=G2Data1)
-#     G2.create_dataset('Jumping Right', data=G2Data2)
-#     G2.create_dataset('Walking Left', data=G2Data3)
-#     G2.create_dataset('Walking Right', data=G2Data4)
-#     G3 = hdf.create_group('/Bradley')
-#     G4 = hdf.create_group('/Dataset')
-#     G5 = hdf.create_group('/Dataset/Testing')
-#     G5.create_dataset('training/data',data=X_train)
-#     G5.create_dataset('training/labels',data=y_train)
-#     G6 = hdf.create_group('/Dataset/Training')
-#     G6.create_dataset('testing/data',data=X_test)
-#     G6.create_dataset('testing/labels',data=y_test)
+# putting data into the hdf5 file
+with h5py.File('./hdf5_groups.h5', 'w') as hdf:
+    G1 = hdf.create_group('/Daniel')
+    G1.create_dataset('Jumping Left', data=G1Data1)
+    G1.create_dataset('Jumping Right', data=G1Data2)
+    G1.create_dataset('Walking Left', data=G1Data3)
+    G1.create_dataset('Walking Right', data=G1Data4)
+    G2 = hdf.create_group('/Josh')
+    G2.create_dataset('Jumping Left', data=G2Data1)
+    G2.create_dataset('Jumping Right', data=G2Data2)
+    G2.create_dataset('Walking Left', data=G2Data3)
+    G2.create_dataset('Walking Right', data=G2Data4)
+    G3 = hdf.create_group('/Bradley')
+    G4 = hdf.create_group('/Dataset')
 
-# Data Visualization
-#skipped for now, more important stuff to work on first
+# Data Visualization - see visualization.py
 
 scaler = StandardScaler()
 l_reg = LogisticRegression(max_iter=10000)
@@ -278,6 +271,14 @@ X_train_windows = []
 X_test_windows = []
 Y_train_labels = []
 Y_test_labels = []
+
+with h5py.File('./hdf5_groups.h5', 'w') as hdf:
+    G5 = hdf.create_group('/Dataset/Testing')
+    G5.create_dataset('training/data',data=X_train_windows)
+    G5.create_dataset('training/labels',data=Y_train_labels)
+    G6 = hdf.create_group('/Dataset/Training')
+    G6.create_dataset('testing/data',data=X_test_windows)
+    G6.create_dataset('testing/labels',data=Y_test_labels)
 
 i=0
 while i < len(X_train):
