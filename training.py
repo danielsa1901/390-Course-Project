@@ -16,6 +16,7 @@ from sklearn.decomposition import PCA
 from scipy.stats import skew
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay, accuracy_score, confusion_matrix, f1_score, recall_score, roc_auc_score, roc_curve
 from scipy.stats import kurtosis
+from sklearn.model_selection import learning_curve
 
 # for output visualization
 np.set_printoptions(threshold=np.inf)
@@ -122,14 +123,12 @@ jump1Smooth = SmoothNormalize(G1Data1).dropna()
 jump2Smooth = SmoothNormalize(G1Data2).dropna()
 jump3Smooth = SmoothNormalize(G1Data3).dropna()
 jump4Smooth = SmoothNormalize(G1Data4).dropna()
+jump5Smooth = SmoothNormalize(G1Data5).dropna()
+jump6Smooth = SmoothNormalize(G1Data6).dropna()
 walk1Smooth = SmoothNormalize(G2Data1).dropna()
 walk2Smooth = SmoothNormalize(G2Data2).dropna()
 walk3Smooth = SmoothNormalize(G2Data3).dropna()
 walk4Smooth = SmoothNormalize(G2Data4).dropna()
-
-#Josh's Data
-jump5Smooth = SmoothNormalize(G1Data5).dropna()
-jump6Smooth = SmoothNormalize(G1Data6).dropna()
 walk5Smooth = SmoothNormalize(G2Data5).dropna()
 walk6Smooth = SmoothNormalize(G2Data6).dropna()
 
@@ -253,7 +252,7 @@ def extract_features(window):
     features.append(kurtosis(x_acc))
     features.append(kurtosis(y_acc))
     features.append(kurtosis(z_acc))
-    #test
+    #absolute acceleration features (was added in afterwards)
     features.append(np.min(abs_acc))
     features.append(np.max(abs_acc))
     features.append(np.max(abs_acc)-np.min(abs_acc))
@@ -273,10 +272,10 @@ Y_train_labels = []
 Y_test_labels = []
 
 with h5py.File('./hdf5_groups.h5', 'w') as hdf:
-    G5 = hdf.create_group('/Dataset/Testing')
+    G5 = hdf.create_group('/Dataset/Training')
     G5.create_dataset('training/data',data=X_train_windows)
     G5.create_dataset('training/labels',data=Y_train_labels)
-    G6 = hdf.create_group('/Dataset/Training')
+    G6 = hdf.create_group('/Dataset/Testing')
     G6.create_dataset('testing/data',data=X_test_windows)
     G6.create_dataset('testing/labels',data=Y_test_labels)
 
@@ -343,3 +342,24 @@ print('F1 Score: ', f1score)
 
 print("Prediction Output:")
 print(y_pred)
+
+train_sizes, train_scores, test_scores = learning_curve(
+    clf, X_train_features, Y_train_labels, cv=5, n_jobs=-1, train_sizes=np.linspace(0.1, 1.0, 10), scoring='accuracy')
+
+train_scores_mean = np.mean(train_scores, axis=1)
+train_scores_std = np.std(train_scores, axis=1)
+test_scores_mean = np.mean(test_scores, axis=1)
+test_scores_std = np.std(test_scores, axis=1)
+
+plt.figure(figsize=(10, 6))
+plt.title('Learning Curve')
+plt.xlabel('Training examples')
+plt.ylabel('Score')
+
+plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color='r')
+plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color='g')
+plt.plot(train_sizes, train_scores_mean, 'o-', color='r', label='Training score')
+plt.plot(train_sizes, test_scores_mean, 'o-', color='g', label='Cross-validation score')
+
+plt.legend(loc='best')
+plt.show()
